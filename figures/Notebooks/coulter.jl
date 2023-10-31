@@ -6,7 +6,6 @@
 
 # Measured on a Beckman-Coulter Z2 Coulter Counter
 
-using Revise
 using Bootstrap
 using CategoricalArrays
 using Coulter
