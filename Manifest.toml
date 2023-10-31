@@ -2,7 +2,7 @@
 
 julia_version = "1.9.3"
 manifest_format = "2.0"
-project_hash = "6a8bfbcf7a7df2042bb70f6bd1bc76bd33fb8b2f"
+project_hash = "aa4150ac5d894f342f0a09aee3072ef57a74e198"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -181,12 +181,6 @@ deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
 version = "1.0.5+0"
 
-[[deps.Compose]]
-deps = ["Base64", "Colors", "DataStructures", "Dates", "IterTools", "JSON", "LinearAlgebra", "Measures", "Printf", "Random", "Requires", "Statistics", "UUIDs"]
-git-tree-sha1 = "bf6570a34c850f99407b494757f5d7ad233a7257"
-uuid = "a81c6b42-2e10-5240-aca2-a61377ecd94b"
-version = "0.9.5"
-
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
 git-tree-sha1 = "5372dbbf8f0bdb8c700db5367132925c0771ef7e"
@@ -199,16 +193,10 @@ uuid = "d38c429a-6771-53c6-b99e-75d170b6e991"
 version = "0.6.2"
 
 [[deps.Coulter]]
-deps = ["DataStructures", "Dates", "Distributions", "FileIO", "Gadfly", "KernelDensity", "StatsBase"]
-git-tree-sha1 = "72b787a253c91ac8af8934c24941b1696059a06b"
+deps = ["DataStructures", "Dates", "Distributions", "FileIO", "KernelDensity", "StatsBase"]
+git-tree-sha1 = "5228599f0a0fc6982a314fb8f9c418c092d858f7"
 uuid = "a3d351dc-6fd6-5e2a-8264-8c30d37eaa59"
-version = "0.2.1"
-
-[[deps.CoupledFields]]
-deps = ["LinearAlgebra", "Statistics", "StatsBase"]
-git-tree-sha1 = "6c9671364c68c1158ac2524ac881536195b7e7bc"
-uuid = "7ad07ef1-bdf2-5661-9d2b-286fd4296dac"
-version = "0.2.0"
+version = "0.3.0"
 
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
@@ -431,12 +419,6 @@ git-tree-sha1 = "025d171a2847f616becc0f84c8dc62fe18f0f6dd"
 uuid = "d2c73de3-f751-5644-a686-071e5b155ba9"
 version = "0.72.10+0"
 
-[[deps.Gadfly]]
-deps = ["Base64", "CategoricalArrays", "Colors", "Compose", "Contour", "CoupledFields", "DataAPI", "DataStructures", "Dates", "Distributions", "DocStringExtensions", "Hexagons", "IndirectArrays", "IterTools", "JSON", "Juno", "KernelDensity", "LinearAlgebra", "Loess", "Measures", "Printf", "REPL", "Random", "Requires", "Showoff", "Statistics"]
-git-tree-sha1 = "d546e18920e28505e9856e1dfc36cff066907c71"
-uuid = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
-version = "1.4.0"
-
 [[deps.Gettext_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Libiconv_jll", "Pkg", "XML2_jll"]
 git-tree-sha1 = "9b02998aba7bf074d14de89f9d37ca24a1a0b046"
@@ -472,12 +454,6 @@ git-tree-sha1 = "129acf094d168394e80ee1dc4bc06ec835e510a3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "2.8.1+1"
 
-[[deps.Hexagons]]
-deps = ["Test"]
-git-tree-sha1 = "de4a6f9e7c4710ced6838ca906f81905f7385fd6"
-uuid = "a1b4810d-1bce-5fbd-ac56-80944d57a21f"
-version = "0.2.0"
-
 [[deps.HypergeometricFunctions]]
 deps = ["DualNumbers", "LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
 git-tree-sha1 = "f218fe3736ddf977e0e772bc9a586b2383da2685"
@@ -495,11 +471,6 @@ deps = ["AbstractFFTs", "ColorVectorSpace", "Colors", "FixedPointNumbers", "Mapp
 git-tree-sha1 = "fc5d1d3443a124fde6e92d0260cd9e064eba69f8"
 uuid = "a09fc81d-aa75-5fe9-8630-4744c3626534"
 version = "0.10.1"
-
-[[deps.IndirectArrays]]
-git-tree-sha1 = "012e604e1c7458645cb8b436f8fba789a51b257f"
-uuid = "9b13fd28-a010-5f03-acff-a1bbcff69959"
-version = "1.0.0"
 
 [[deps.InlineStrings]]
 deps = ["Parsers"]
@@ -533,11 +504,6 @@ git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.2"
 
-[[deps.IterTools]]
-git-tree-sha1 = "4ced6667f9974fc5c5943fa5e2ef1ca43ea9e450"
-uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
-version = "1.8.0"
-
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
@@ -566,12 +532,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "6f2675ef130a300a112286de91973805fcc5ffbc"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "2.1.91+0"
-
-[[deps.Juno]]
-deps = ["Base64", "Logging", "Media", "Profile"]
-git-tree-sha1 = "07cb43290a840908a771552911a6274bc6c072c7"
-uuid = "e5e0dc1b-0480-54bc-9374-aad01c23163d"
-version = "0.8.4"
 
 [[deps.KernelDensity]]
 deps = ["Distributions", "DocStringExtensions", "FFTW", "Interpolations", "StatsBase"]
@@ -711,12 +671,6 @@ git-tree-sha1 = "ae5703dde29228490f03cbd64c47be8131819485"
 uuid = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 version = "2.15.0"
 
-[[deps.Loess]]
-deps = ["Distances", "LinearAlgebra", "Statistics", "StatsAPI"]
-git-tree-sha1 = "a113a8be4c6d0c64e217b472fb6e61c760eb4022"
-uuid = "4345ca2d-374a-55d4-8d30-97f9976e7612"
-version = "0.6.3"
-
 [[deps.LogExpFunctions]]
 deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
 git-tree-sha1 = "7d6dd4e9212aebaeed356de34ccf262a3cd415aa"
@@ -785,7 +739,6 @@ deps = ["Calculus", "LinearAlgebra", "Printf", "Requires"]
 git-tree-sha1 = "bf645d369306c848b6e44e37a1e216b15468c4fc"
 uuid = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
 version = "2.10.0"
-weakdeps = ["Juno", "RecipesBase", "SpecialFunctions", "Unitful"]
 
     [deps.Measurements.extensions]
     MeasurementsJunoExt = "Juno"
@@ -793,16 +746,16 @@ weakdeps = ["Juno", "RecipesBase", "SpecialFunctions", "Unitful"]
     MeasurementsSpecialFunctionsExt = "SpecialFunctions"
     MeasurementsUnitfulExt = "Unitful"
 
+    [deps.Measurements.weakdeps]
+    Juno = "e5e0dc1b-0480-54bc-9374-aad01c23163d"
+    RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
+    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
 [[deps.Measures]]
 git-tree-sha1 = "c13304c81eec1ed3af7fc20e75fb6b26092a1102"
 uuid = "442fdcdd-2543-5da2-b0f3-8c86c306513e"
 version = "0.3.2"
-
-[[deps.Media]]
-deps = ["MacroTools", "Test"]
-git-tree-sha1 = "75a54abd10709c01f1b86b84ec225d26e840ed58"
-uuid = "e89f7d12-3494-54d1-8411-f7d8b9ae1f27"
-version = "0.5.0"
 
 [[deps.Missings]]
 deps = ["DataAPI"]
@@ -1011,10 +964,6 @@ version = "2.2.8"
 [[deps.Printf]]
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
-
-[[deps.Profile]]
-deps = ["Printf"]
-uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[deps.Qt6Base_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Vulkan_Loader_jll", "Xorg_libSM_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_cursor_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "libinput_jll", "xkbcommon_jll"]
