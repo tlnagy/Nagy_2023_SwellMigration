@@ -4,13 +4,14 @@
 # description: ""
 # ---
 
-# Measured on a Beckman-Coulter Z2 Coulter Counter
+# All data was collected on a Beckman-Coulter Z2 Coulter Counter
 
 using Bootstrap
 using CategoricalArrays
 using Coulter
 using CSV
 using DataFrames
+using DataStructures
 using Dates
 using Measures
 using Plots
@@ -18,33 +19,58 @@ using StatsBase
 using StatsPlots
 using Measurements
 using Statistics
+using Unitful
+using ZipFile
 
-rootfolder = normpath(joinpath(@__DIR__, "..", "..", "..", "..", "data")) #hide
-meta = CSV.File(joinpath(rootfolder, "coulter_datasets.csv")) |> DataFrame;
+rootfolder = normpath(joinpath(@__DIR__, "..", "..", "..", "..")); #hide
 
-# ## Load all data from folders and setup plotting
+# Load utility functions
+include(joinpath(rootfolder, "figures", "utils.jl"))
+
+# Load dataset details
+meta = CSV.File(joinpath(rootfolder, "data", "coulter_datasets.csv")) |> DataFrame; 
+
+# ## Load all data from compressed archive
+
+# Tweaked version of
+# [`Coulter.load_folder`](https://github.com/tlnagy/Coulter.jl/blob/501f735f28c813f7c525cbe988041a82cd5ed4e0/src/utils.jl#L34-L56)
+# to handle compressed archives
+
+function load_compressed_folder(archive, datapath)
+    ## get the compressed files that relate to this dataset
+    compressed = filter(x->occursin(datapath, x.name), archive.files)
+    filter!(x->x.compressedsize > 0, compressed)
+
+    runs = DefaultDict{String, Array{Coulter.CoulterCounterRun}}([])
+
+    for run in compressed
+        sample = split(basename(run.name), "_")[1]
+        ## load Coulter data from the compressed stream
+        seekstart(run)
+        push!(runs[sample], Coulter.loadZ2(run, run.name, String(sample)))
+    end
+
+    ## fix ordering of runs by resort the datasets based on the actual embedded
+    ## time 
+    for (_, samples) in runs
+        sort!(samples, by=i->i.timepoint)
+    end
+    runs
+end
+
+archive = ZipFile.Reader(joinpath(rootfolder, "data", "coulter_data.zip"))
 
 runidx = 0
 rawdata = vcat(map(pairs(groupby(meta, :DataPath))) do (key, metadf)
-    runs = Coulter.load_folder(joinpath(normpath(rootfolder, "coulter_data", key.DataPath)))
-
+    runs = load_compressed_folder(archive, key.DataPath) 
     vcat(map(eachrow(metadf)) do row # for each row in the meta table load the runs as new rows each
         global runidx += 1
         DataFrame(:runidx => runidx, pairs(row)..., :CoulterData => runs[row.SampleCode])
     end...)
 end...);
 
-okabe_ito = parse.(Colorant, ["#56B4E9", "#E69F00", "#CC79A7", "#009E73", "#000000", "#F0E442", "#0072B2", "#D55E00"])
-
-default(
-    guidefontsize=10, tickfontsize=10, titlefontsize=12,
-    rightmargin=10mm, gridlinewidth=2, minorgridlinewidth=2, gridstyle=:dash,
-    thickness_scaling=1.5, framestyle = :box, linewidth=1, dpi=300,
-    fontfamily = "helvetica", palette = okabe_ito)
-
 # ## Add relative time
 
-using Unitful
 
 """
     normtime(t, o)

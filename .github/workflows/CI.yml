@@ -12,6 +12,7 @@ jobs:
   docs:
     name: Build demo site
     runs-on: ubuntu-latest
+    environment: build-ci
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1

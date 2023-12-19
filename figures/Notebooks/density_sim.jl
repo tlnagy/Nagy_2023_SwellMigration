@@ -158,8 +158,7 @@ final = combine(groupby(simulated, :sample),
 p = @df simulated plot(:times, :density, group = :sample, yflip=true,
     title = "Simulated sedimentation behavior\nfor a $(round(ustrip(Dmin), sigdigits = 4))-$(round(ustrip(Dmax), sigdigits = 4)) g/mL gradient", 
     xlabel = "Time (mins) @ $(Int(ustrip(round(u"ge", ω^2 * r, sigdigits = 2))))rcf", 
-    background_color = nothing,
-    linewidth = 2, c = [5 6], size = (560, 350), xlim = (0, 95), leg = :outerright,
+    linewidth = 2, c = Plots.palette(:auto)[[5 6]], size = (560, 350), xlim = (0, 95), leg = :outerright,
     ylabel = P"Measured density (g/mL)", xticks=[0, 15, 30, 60], ylim = (1.0445, 1.0575), yticks = (1.045:0.005:1.055))
 
 annotate!([70, 70], ustrip.(final.density_last) .- 0.001, text.(map(x->"$(round(x, sigdigits = 4)) g/mL", ustrip.(final.density_last)), 9, Plots.palette(:auto)[[6, 5]]))
