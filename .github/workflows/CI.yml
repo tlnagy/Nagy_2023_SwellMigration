@@ -12,7 +12,6 @@ jobs:
   docs:
     name: Build demo site
     runs-on: ubuntu-latest
-    environment: build-ci
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
@@ -24,5 +23,7 @@ jobs:
             Pkg.instantiate()'
       - run: julia --project="." site/make.jl
         env:
+          AppID: ${{ secrets.APPID }}
+          AppSecret: ${{ secrets.APPSECRET }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
