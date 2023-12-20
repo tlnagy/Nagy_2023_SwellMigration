@@ -9,15 +9,16 @@ using ImageContrastAdjustment
 using ProgressMeter
 using Measures
 
-# datasets = CSV.File(normpath(@__DIR__, "../data/fxm/fxm_dataset_info.csv")) |> DataFrame
-datasets = CSV.File(normpath(@__DIR__, "../data/fxm/fxm_highres_datasets.csv")) |> DataFrame
-# filter!(x->x.used == "Y", datasets)
+datasets = CSV.File(normpath(@__DIR__, "../data/fxm/fxm_uncaging_datasets_old.csv")) |> DataFrame
+# datasets = CSV.File(normpath(@__DIR__, "../data/fxm/fxm_highres_datasets.csv")) |> DataFrame
+filter!(x->x.used == "Y", datasets)
 
 # ds = datasets[1, :]
 function prepdata(ds)
-    newdspath = normpath(@__DIR__, joinpath("..", "data", "fxm", "highres", ds.new_dataset))
+    # newdspath = normpath(@__DIR__, joinpath("..", "data", "fxm", "highres", ds.new_dataset))
+    newdspath = normpath(@__DIR__, joinpath("..", "data", "fxm", "fxm_uncaging_movies", ds.shortcode))
     if isdir(newdspath)
-        println("Dataset $(ds.new_dataset) already exists, skipping")
+        println("Dataset $(ds.shortcode) already exists, skipping")
         return
     end
 
@@ -77,9 +78,9 @@ linked = vcat(map(eachrow(datasets)) do ds
     procdir = normpath(@__DIR__, ds.old_dataset)
     types = Dict([:rel_volume, :abs_volume_um3] .=> Measurement{Float64})
     types[:footprint_cart] = EmbedVector{CartesianIndex{2}, ';'}
-    types[:locality_cart] = EmbedVector{CartesianIndex{2}, ';'}
+    # types[:locality_cart] = EmbedVector{CartesianIndex{2}, ';'}
 
-    footprints = CSV.File(joinpath(procdir, "augmented_w_localities.csv"), types = types) |> DataFrame
+    footprints = CSV.File(joinpath(procdir, "augmented_w_footprints.csv"), types = types) |> DataFrame
 
     rename!(footprints, [s => join(split(s, "_")[1:end-1], "_") for s in filter(x->occursin("_387LP", x), names(footprints))])
 
@@ -90,9 +91,14 @@ linked = vcat(map(eachrow(datasets)) do ds
                                :lane => ds.lane,
                                :dish => ds.dish,
                                :scriptver => ds.scriptver,
-                               :dataset => joinpath("movies", ds.new_dataset))
+                               :dataset => joinpath("movies", ds.shortcode))
 end...)
-linked |> CSV.write(joinpath("data", "fxm", "fxm_highres_augmented_w_localities.csv"), compressed = false, missingstring="n/a")
+
+types = Dict([:rel_volume, :abs_volume_um3] .=> Measurement{Float64})
+types[:footprint_cart] = EmbedVector{CartesianIndex{2}, ';'}
+lowres = CSV.File(joinpath(rootfolder, "data", "fxm", "og_upload", "fxm_uncaging_augmented_w_footprints.csv"), types = types) |> DataFrame
+
+vcat(lowres, linked) |> CSV.write(joinpath("data", "fxm", "new_upload", "fxm_uncaging_augmented_w_footprints.csv"), compressed = false)
 
 types = Dict([:rel_volume, :abs_volume_um3] .=> Measurement{Float64})
 types[:footprint_cart] = EmbedVector{CartesianIndex{2}, ';'}
@@ -101,11 +107,13 @@ footprints = CSV.File(joinpath("data", "fxm", "augmented_w_footprints.csv"), typ
 
 sort!(datasets, :date)
 datasets.prefix .= ""
-@showprogress for (i, ds) in enumerate(eachrow(datasets))
-    src = joinpath(normpath(@__DIR__, "..", "data", "fxm", "fxm_uncaging_movies", ds.new_dataset))
+ds = first(datasets)
+i = 30 
+# @showprogress for (i, ds) in enumerate(eachrow(datasets))
+    src = joinpath(normpath(@__DIR__, "..", "data", "fxm", "fxm_uncaging_movies", ds.shortcode))
     dst = joinpath(normpath(@__DIR__, "..", "data", "fxm", "flat"))
-    prefix = "fxm_uncaging_ds$(i)_$(ds.new_dataset)"
+    prefix = "fxm_uncaging_ds$(i)_$(ds.shortcode)"
     cp(joinpath(src, "fxmcorr.tif"), joinpath(dst, "$(prefix)_fxmcorr.tif"))
     cp(joinpath(src, "raw_img.tif"), joinpath(dst, "$(prefix)_rawrgb.tif"))
     ds.prefix = prefix
-end
+# end
