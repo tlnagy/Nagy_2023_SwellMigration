@@ -8,13 +8,21 @@ on:
   pull_request:
     branches:
     - main
+
+# needed to allow julia-actions/cache to delete old caches that it has created
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   docs:
     name: Build demo site
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/cache@v1
+      - uses: julia-actions/julia-buildpkg@v1
         with:
           version: '1'
       - run: |
