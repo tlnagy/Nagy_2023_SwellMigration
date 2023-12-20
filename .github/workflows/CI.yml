@@ -20,6 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Restore datasets
+        id: cache-datasets-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: data/
+          key: ${{ runner.os }}-dataset
+
       - uses: julia-actions/setup-julia@v1
       - uses: julia-actions/cache@v1
       - uses: julia-actions/julia-buildpkg@v1
@@ -35,3 +43,10 @@ jobs:
           AppSecret: ${{ secrets.APPSECRET }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+      
+      - name: Save datasets
+        id: cache-datasets-save
+        uses: actions/cache/save@v3
+        with:
+          path: data/
+          key: ${{ steps.cache-datasets-restore.outputs.cache-primary-key }}
