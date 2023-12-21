@@ -145,6 +145,8 @@ end
 representative_cells = Set([
     ("WT", 47),
     ("BIX", 49),
+    ("Duvel", 30),
+    ("LatB", 49)
 ])
 
 types[:condition] = String
@@ -207,10 +209,10 @@ getdataset(y) = filter(x->occursin(basename(y), x) & occursin("highres", x) & oc
 # ## Plot control cell high resolution volume fluctuations
 
 c = filter(x->x.condition == "WT", highrescells)
+wtcell = c
 
 imgname = first(filter(x->x.condition == "WT", datasets)).datapath * "_fxmcorr.tif"
 img = TiffImages.load(joinpath(rootfolder, "data", imgname), mmap = true);
-
 
 transform!(c,
     AsTable(:) => ByRow(x->getcell(img, x)) => AsTable)
@@ -257,12 +259,13 @@ anim = @animate for (i, r) in enumerate(eachrow(c))
     p2
 end
 
-save(joinpath("assets", "sv2_still.png"), load(joinpath(anim.dir, anim.frames[end])))
+cp(joinpath(anim.dir, anim.frames[end]), joinpath("assets", "sv2_still.png"); force = true)
 mp4(anim, "sv2_video.mp4")
 
 # ## Plot high time resolution volume fluctuations for a NHE1 inhibited cell
 
 c = filter(x->x.condition == "BIX", highrescells)
+bixcell = c
 
 imgname = first(filter(x->x.condition == "BIX", datasets)).datapath * "_fxmcorr.tif"
 img = TiffImages.load(joinpath(rootfolder, "data", imgname), mmap = true);
@@ -312,3 +315,71 @@ anim = @animate for (i, r) in enumerate(eachrow(c))
     p2
 end
 mp4(anim, "sv3_video.mp4")
+
+# ## Plot combined overlay
+
+c = filter(x->x.condition == "LatB", highrescells)
+latcell = c
+c.reltime = uconvert.(u"minute", c.time_s .* u"s") .+ 30u"minute"
+
+p = @df bixcell scatter(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
+        markerstrokecolor = okabe_ito[2], m = 2, c = okabe_ito[2], label = "")
+
+v = mapwindow(median, bixcell.abs_volume_um3, -2:2) ./ baseline_vs[first(bixcell.condition)]
+@df bixcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
+        ylabel = "Normalized volume",
+        linewidth = 2, c = okabe_ito[2], label = "")
+hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[2], linestyle = :dash,
+    label = "")
+
+@df latcell scatter!(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
+        markerstrokecolor = okabe_ito[5], m = 2, c = okabe_ito[5], label = "")
+
+v = mapwindow(median, latcell.abs_volume_um3, -2:2) ./ baseline_vs[first(latcell.condition)]
+@df latcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
+        framestyle = :axes, linewidth = 2, c = okabe_ito[5], leg = :outerright,
+        tick_direction = :out, label = "")
+hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[5], linestyle = :dash, 
+    label = "")
+
+@df wtcell scatter!(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
+        markerstrokecolor = okabe_ito[1], m = 2, c = okabe_ito[1], label = "")
+
+v = mapwindow(median, wtcell.abs_volume_um3, -2:2) ./ baseline_vs[first(wtcell.condition)]
+@df wtcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
+        xlabel = P"Time (mins)", xticks = 0:5:10, ylim = (0.8, 1.45),
+        yticks = 0.8:0.2:1.4,
+        ylabel = "Normalized volume",
+        framestyle = :axes, linewidth = 2, c = okabe_ito[1], leg = :outerright,
+        tick_direction = :out, label = "")
+hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[1], linestyle = :dash, 
+    label = "")
+
+annotate!(10.5, 1.30, text("Ctrl", "Helvetica Bold", okabe_ito[1], :left, 10))
+annotate!(10.5, 0.95, text("iNHE1", "Helvetica Bold", okabe_ito[2], :left, 10))
+annotate!(10.5, 1.19, text("LatB", "Helvetica Bold", okabe_ito[5], :left, 10))
+
+p1 = plot(p, grid = :y, size = (450, 350))
+
+savefig(p1, joinpath("assets", "single_cell.svg"))
+p1
+
+# ## Motile PI3Kγ cells show fluctuations
+
+duvelcell = filter(x->x.condition == "Duvel", highrescells)
+duvelcell.reltime = uconvert.(u"minute", duvelcell.time_s .* u"s") .+ 30u"minute"
+
+p =  @df duvelcell scatter(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
+        markerstrokecolor = okabe_ito[4], m = 2, c = okabe_ito[4], label = "")
+
+v = mapwindow(median, duvelcell.abs_volume_um3, -2:2) ./ baseline_vs[first(duvelcell.condition)]
+@df duvelcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
+        framestyle = :axes, linewidth = 2, c = okabe_ito[4], leg = :outerright,
+        tick_direction = :out, label = "")
+hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[4], linestyle = :dash, 
+    label = "")
+
+p1 = plot(p, grid = :y, size = (450, 350), 
+        xlabel = P"Time (mins)", xticks = 0:5:10, ylim = (0.8, 1.45),
+        yticks = 0.8:0.2:1.4,
+        ylabel = "Normalized volume")
