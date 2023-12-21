@@ -49,9 +49,14 @@ navigation bar to see the website rendered nicely.
     ```@raw html
     <img src="https://img.shields.io/badge/show-nbviewer-579ACA.svg"
     alt="notebook"/> 
-    ``` buttons on the top of each page. However, you'll need to
-    make sure that the Julia environment is set up properly and that the data is
+    ``` buttons on the top of each page. However, you'll need to make sure that the Julia environment is set up properly and that the data is
     located in the correct relative path compared to the script.
+
+    The data can be downloaded independently:
+
+    > Nagy, Tamas; Strickland, Jack; Weiner, Orion (2023). Data from: Neutrophils actively swell to potentiate rapid migration [Dataset]. Dryad. <https://doi.org/10.7272/Q6NS0S5N>
+
+    and should be placed in a folder called `data/` in the parent folder containing the scripts
 
 This site would not be possible without the fantastic
 [`Documenter.jl`](https://documenter.juliadocs.org/stable/), 

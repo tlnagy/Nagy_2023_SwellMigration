@@ -1,5 +1,6 @@
 # ---
-# title: Single cell analysis
+# title: Single cell volume fluctuation analysis
+# cover: assets/sv2_still.png
 # description: ""
 # ---
 
@@ -156,7 +157,7 @@ types[:footprint_cart] = EmbedVector{CartesianIndex{2}, ';'}
 types[:locality_cart] = EmbedVector{CartesianIndex{2}, ';'}
 types[:dataset] = String
 highrescells = CSV.Rows(highrescsvpath; types = types, select = collect(keys(types))) |> 
-    TableOperations.filter(x->(Tables.getcolumn(x, :condition), Tables.getcolumn(x, :particle)) in representative_cells) |> DataFrame
+    TableOperations.filter(x->(Tables.getcolumn(x, :condition), Tables.getcolumn(x, :particle)) in representative_cells) |> DataFrame;
 
 # !!! note
 #     Filtering the rows on read like above is only necessary to limit memory
@@ -256,6 +257,7 @@ anim = @animate for (i, r) in enumerate(eachrow(c))
     p2
 end
 
+save(joinpath("assets", "sv2_still.png"), load(joinpath(anim.dir, anim.frames[end])))
 mp4(anim, "sv2_video.mp4")
 
 # ## Plot high time resolution volume fluctuations for a NHE1 inhibited cell
@@ -283,7 +285,7 @@ anim = @animate for (i, r) in enumerate(eachrow(c))
     v = mapwindow(median, c[1:i, :abs_volume_um3] ./ baseline_vs[first(c.condition)], -2:2)
     @df c[1:i, :] plot!(ustrip.(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)),
             xlabel = "Time (mins)", #xticks = 0:5:10, ylim = (0.8, 1.45),
-            yticks = 0.8:0.2:1.4,
+            yticks = 0.8:0.1:1.4,
             ylabel = "Normalized volume", size = (600,480), bottommargin = -10px,
             framestyle = :axes, linewidth = 2, c = okabe_ito[2], leg = :outerright,
             tick_direction = :out, label = "", #topmargin = -15mm, leftmargin = 5mm, bottommargin = -5mm)
