@@ -13,6 +13,7 @@ using ImageFiltering
 using Measures
 using Measurements
 using Plots
+using Plots: px
 using Statistics
 using StatsPlots
 using Unitful
@@ -109,8 +110,8 @@ function velocity_plot(df)
         framestyle = :axes, grid = :y, xlim = (-10, 30), ylim = (0, 10.5),
         tick_direction = :out, #leg = :outerright,
         topmargin = 5mm, rightmargin = 15mm,
-        linewidth = 2, c = getindex.(Ref(cmap), :condition), leg = false, 
-        size = (480, 350))
+        linewidth = 2, c = getindex.(Ref(cmap), :condition), leg = false, margin = 25px,
+        size = (530, 400))
     vspan!([0, 0.5], label = "", alpha = 0.5, c = colorant"purple")
     annotate!(-0.3, 9, text("fMLP\nuncage", :black, :right, 8))
     ("WT" in df.condition) && annotate!(30.5, 7.5, text("Ctrl", "Helvetica Bold", okabe_ito[1], :left, 10))

@@ -415,7 +415,7 @@ annotate!(10.5, 1.30, text("Ctrl", "Helvetica Bold", okabe_ito[1], :left, 10))
 annotate!(10.5, 0.95, text("iNHE1", "Helvetica Bold", okabe_ito[2], :left, 10))
 annotate!(10.5, 1.19, text("LatB", "Helvetica Bold", okabe_ito[5], :left, 10))
 
-p1 = plot(p, grid = :y, size = (450, 350))
+p1 = plot(p, grid = :y, margin = 25px, size = (500, 400))
 
 savefig(p1, joinpath("assets", "single_cell.svg"))
 p1

@@ -1,7 +1,7 @@
 # ---
 # title: Neutrophil Volume Response in Suspension
 # cover: assets/coulter_response_kos.svg
-# description: ""
+# description: "To better compare to previous literature, we also measured volume response in suspension"
 # ---
 
 # All data was collected on a Beckman-Coulter Z2 Coulter Counter
@@ -15,6 +15,7 @@ using DataStructures
 using Dates
 using Measures
 using Plots
+using Plots: px
 using StatsBase
 using StatsPlots
 using Measurements
@@ -129,10 +130,10 @@ p = @df combo plot(:roundtime, Measurements.value.(:median_m_mean),
     Measurements.value.(:median_u_mean .- :median_m_mean)), group = :Sample, 
     leg = false, linewidth = 2, ylabel = "Median volume (fL)", xlabel = "Time", 
     c = [5 2 4 1],
-    m = 3, topmargin = -3mm,
+    m = 3, topmargin = -3mm, margin = 25px,
     framestyle = :axes, xticks = [-3, 0, 5, 10],
     title = "Neutrophil Volume Response\nin Suspension",
-    xlim = (-3.5u"minute", 12.5u"minute"), ylim = (310, 400), size = (480, 400))
+    xlim = (-3.5u"minute", 12.5u"minute"), ylim = (310, 400), size = (530, 450))
 
 plot!([0, 0],[380,360],arrow=true,color=:black,linewidth=3,label="", rightmargin = 15mm)
 annotate!(2, 385, text("+fMLP", :black, :right, 10))
@@ -181,12 +182,12 @@ p = normplot(filter(x->x.Sample in ["DMSO", "iNHE1", "Duvelisib"], combo), [2 4 
 
 annotate!(13, 1.00, text("iNHE1", okabe_ito[2], :left, :bold, 11))
 annotate!(13, 1.10, text("DMSO", okabe_ito[1], :left, :bold, 11))
-annotate!(13, 1.05, text("iPI3Kγ", okabe_ito[4], :left, :bold, 11))
+annotate!(13, 1.05, text("iPI3Kγ", okabe_ito[4], :left, :bold, 11), margin = 25px, size = (540, 450))
 p
 
 # ## Plot normalized volume for Latrunculin condition
 
 p2 = normplot(filter(x->x.Sample in ["DMSO", "LatB"], combo), [5 1])
 annotate!(13, 1.095, text("DMSO", okabe_ito[1], :left, :bold, 11))
-annotate!(13, 1.12, text("LatB", okabe_ito[5], :left, :bold, 11))
+annotate!(13, 1.12, text("LatB", okabe_ito[5], :left, :bold, 11), margin = 25px, size = (540, 450))
 p2
