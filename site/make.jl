@@ -32,7 +32,9 @@ makedocs(
     sitename="Neutrophils Actively Swell\nto Potentiate Migration",
     format = Documenter.HTML(
         size_threshold_ignore = ["figures/Notebooks/density_sim.md", "figures/Notebooks/latb_volume.md", "figures/Notebooks/motility.md", "figures/Notebooks/volume.md", "figures/Notebooks/singlecell.md"],
-        assets = assets
+        assets =vcat([
+                asset("https://analytics.tamasnagy.com/js/script.js", class=:js, attributes=Dict(Symbol("data-domain") => "tamasnagy.com", :defer => ""))
+            ], assets),
     ),
     warnonly = true,
     pages = [
