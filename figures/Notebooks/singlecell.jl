@@ -4,6 +4,18 @@
 # description: "High time resolution imaging reveals that motile cells show large fluctuations in cell volume"
 # ---
 
+# !!! tip
+#     This analysis has been tweaked to perform better on the (relatively) low
+#     memory Github workers used to build the site. It will require some minor
+#     modifications to generate the full animated movies from the paper which
+#     are noted where needed.
+#
+#     ```@raw html
+#     <video autoplay loop muted playsinline>
+#         <source src="../../../assets/sv2_video.mp4" type="video/mp4">
+#     </video>
+#     ```
+
 using Bootstrap
 using ColorSchemes
 using CSV
@@ -87,9 +99,9 @@ annotate!(40, 1.29, text("High Time Res", :gray, :center, 8))
 @df sort(med_vols, :reltime) plot!(:reltime, :v ./ getindex.(Ref(baseline_vs), :condition), #ribbon = (:v .- :l, :u .- :v), 
     group = :condition, c = getindex.(Ref(cmap), :condition), ylim = (0.9, 1.3),
     leg = :outerright, framestyle = :axes, grid = :y, title = "High Temporal Resolution Timeline",
-    xlabel = P"Time (mins)", ylabel = "Norm. Median Volume")
+    xlabel = P"Time (mins)", ylabel = "Norm. Median Volume", margin = 50px)
 vspan!([0, 0.5], c=colorant"purple", label = "")
-annotate!(-0.5, 1.25, text("fMLP\nuncage", :purple, :right, 8), size = (550, 350), label = "")
+annotate!(-0.5, 1.25, text("fMLP\nuncage", :purple, :right, 8), size = (650, 450), label = "")
 
 # ## Compute outlines for all cells using their CartesianIndices
 
@@ -285,128 +297,215 @@ anim[1]
 # 
 # ```@raw html
 # <video autoplay loop muted playsinline>
-#     <source src="/assets/sv2_video.mp4" type="video/mp4">
+#     <source src="../../../assets/sv2_video.mp4" type="video/mp4">
 # </video>
 # ```
 
-## ## Plot high time resolution volume fluctuations for a NHE1 inhibited cell
+## Plot high time resolution volume fluctuations for a NHE1 inhibited cell
 
-## c = filter(x->x.condition == "BIX", highrescells)
-## bixcell = c
+c = filter(x->x.condition == "BIX", highrescells)
+bixcell = c
 
-## imgname = first(filter(x->x.condition == "BIX", datasets)).datapath * "_fxmcorr.tif"
-## img = TiffImages.load(joinpath(rootfolder, "data", imgname), mmap = true);
+imgname = first(filter(x->x.condition == "BIX", datasets)).datapath * "_fxmcorr.tif"
+img = TiffImages.load(joinpath(rootfolder, "data", imgname), mmap = true);
 
-## transform!(c,
-##     AsTable(:) => ByRow(x->getcell(img, x)) => AsTable)
+transform!(c,
+    AsTable(:) => ByRow(x->getcell(img, x)) => AsTable)
 
-## crng = Float64.((median(first.(c.img_ex)), median(last.(c.img_ex))))
+crng = Float64.((median(first.(c.img_ex)), median(last.(c.img_ex))))
 
-## c.img .= adjust_histogram.(c.img, Ref(LinearStretching(crng => (0.1, 1.3))));
+c.img .= adjust_histogram.(c.img, Ref(LinearStretching(crng => (0.1, 1.3))));
 
-## c.reltime = uconvert.(u"minute", c.time_s .* u"s") .+ 30u"minute"
+c.reltime = uconvert.(u"minute", c.time_s .* u"s") .+ 30u"minute"
 
-## anim = @animate for (i, r) in enumerate(eachrow(c))
-##     if i < 5
-##         continue
-##     end
-##     p2 = @df c[1:i, :] scatter(ustrip.(:reltime), :abs_volume_um3 ./ baseline_vs[first(c.condition)], xlim = ustrip.(extrema(c.reltime)),
-##             markerstrokecolor = faint(okabe_ito[2]), m = 2, c = faint(okabe_ito[2]), label = "", topmargin = 130px)
-##     v = mapwindow(median, c[1:i, :abs_volume_um3] ./ baseline_vs[first(c.condition)], -2:2)
-##     @df c[1:i, :] plot!(ustrip.(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)),
-##             xlabel = "Time (mins)", #xticks = 0:5:10, ylim = (0.8, 1.45),
-##             yticks = 0.8:0.1:1.4,
-##             ylabel = "Normalized volume", size = (600,480), bottommargin = -10px,
-##             framestyle = :axes, linewidth = 2, c = okabe_ito[2], leg = :outerright,
-##             tick_direction = :out, label = "", #topmargin = -15mm, leftmargin = 5mm, bottommargin = -5mm)
-## )
-##     yrng, xrng = extrema(c.x) .+ (-20-40, 20+40),extrema(c.y) .+ (-20-80, 20+80) 
-##     sz = xrng[2] - xrng[1], yrng[2] - yrng[1]
-##     x = 400
-##     p1 = plot!(permutedims(r.img, [2,1]), xlim = xrng, ylim = yrng,
-##         inset = bbox(0.15, 0.0, x * px, x / (sz[1]/sz[2]) * px),
-##         subplot = 2,
-##         xflip = true,
-##         leg = false, framestyle = :none, grid = nothing, xticks = false, yticks = false)
-##     @df c[1:i, :] plot!(:y, :x, subplot = 2,group = :particle, aspect_ratio = 1.0, yflip = true, c = 2)
+## anim = @animate for (i, r) in Iterators.drop(enumerate(eachrow(c)), 5)
+anim = map(collect(Iterators.drop(enumerate(eachrow(c)), 5))[end:end]) do (i, r)
+    p2 = @df c[1:i, :] scatter(ustrip.(:reltime), :abs_volume_um3 ./ baseline_vs[first(c.condition)], xlim = ustrip.(extrema(c.reltime)),
+            markerstrokecolor = faint(okabe_ito[2]), m = 2, c = faint(okabe_ito[2]), label = "", topmargin = 130px)
+    v = mapwindow(median, c[1:i, :abs_volume_um3] ./ baseline_vs[first(c.condition)], -2:2)
+    @df c[1:i, :] plot!(ustrip.(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)),
+            xlabel = "Time (mins)", #xticks = 0:5:10, ylim = (0.8, 1.45),
+            yticks = 0.8:0.1:1.4,
+            ylabel = "Normalized volume", size = (600,480), bottommargin = -10px,
+            framestyle = :axes, linewidth = 2, c = okabe_ito[2], leg = :outerright,
+            tick_direction = :out, label = "", #topmargin = -15mm, leftmargin = 5mm, bottommargin = -5mm)
+)
+    yrng, xrng = extrema(c.x) .+ (-20-40, 20+40),extrema(c.y) .+ (-20-80, 20+80) 
+    sz = xrng[2] - xrng[1], yrng[2] - yrng[1]
+    x = 400
+    p1 = plot!(permutedims(r.img, [2,1]), xlim = xrng, ylim = yrng,
+        inset = bbox(0.15, 0.0, x * px, x / (sz[1]/sz[2]) * px),
+        subplot = 2,
+        xflip = true,
+        leg = false, framestyle = :none, grid = nothing, xticks = false, yticks = false)
+    @df c[1:i, :] plot!(:y, :x, subplot = 2,group = :particle, aspect_ratio = 1.0, yflip = true, c = 2)
 
-##     plot!(r.locality_cart_getoutline[[2, 1]]..., c = 2, linestyle = :dash, label = "", subplot = 2)
-##     plot!(r.footprint_cart_getoutline[[2,1]]..., c = 2, label = "", subplot = 2)
+    plot!(r.locality_cart_getoutline[[2, 1]]..., c = 2, linestyle = :dash, label = "", subplot = 2)
+    plot!(r.footprint_cart_getoutline[[2,1]]..., c = 2, label = "", subplot = 2)
 
-##     plot!(rectangle(50/0.653,7,xrng[1] + 10, yrng[1] + 10), subplot = 2,
-##           linewidth = 0, c=colorant"black", label = "") 
+    plot!(rectangle(50/0.653,7,xrng[1] + 10, yrng[1] + 10), subplot = 2,
+          linewidth = 0, c=colorant"black", label = "") 
 
 
-##     ## l = @layout [a{0.65h}; b{0.35h}]
-##     ## plot(p2, size = (600, 400))0
-##     p2
-## end
-## mp4(anim, "sv3_video.mp4")
+    ## l = @layout [a{0.65h}; b{0.35h}]
+    ## plot(p2, size = (600, 400))0
+    p2
+end;
 
-## # ## Plot combined overlay
+# As we can see, NHE1 inhibited cells can move, but slowly:
 
-## c = filter(x->x.condition == "LatB", highrescells)
-## latcell = c
-## c.reltime = uconvert.(u"minute", c.time_s .* u"s") .+ 30u"minute"
+savefig(anim[1], joinpath("assets", "sv3_still.png"))
+anim[1]
 
-## p = @df bixcell scatter(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
-##         markerstrokecolor = okabe_ito[2], m = 2, c = okabe_ito[2], label = "")
+# If run on your own machine run the following lines to generate the animated
+# movie of the iNHE1 cell:
+# 
+# ```julia
+# cp(joinpath(anim.dir, anim.frames[end]), joinpath("assets", "sv3_still.png"); force = true)
+# mp4(anim, "sv3_video.mp4")
+# ```
+# which should look this:
+# 
+# ```@raw html
+# <video autoplay loop muted playsinline>
+#     <source src="../../../assets/sv3_video.mp4" type="video/mp4">
+# </video>
+# ```
 
-## v = mapwindow(median, bixcell.abs_volume_um3, -2:2) ./ baseline_vs[first(bixcell.condition)]
-## @df bixcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
-##         ylabel = "Normalized volume",
-##         linewidth = 2, c = okabe_ito[2], label = "")
-## hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[2], linestyle = :dash,
-##     label = "")
+# ## Plot combined overlay
 
-## @df latcell scatter!(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
-##         markerstrokecolor = okabe_ito[5], m = 2, c = okabe_ito[5], label = "")
+c = filter(x->x.condition == "LatB", highrescells)
+latcell = c
+c.reltime = uconvert.(u"minute", c.time_s .* u"s") .+ 30u"minute"
 
-## v = mapwindow(median, latcell.abs_volume_um3, -2:2) ./ baseline_vs[first(latcell.condition)]
-## @df latcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
-##         framestyle = :axes, linewidth = 2, c = okabe_ito[5], leg = :outerright,
-##         tick_direction = :out, label = "")
-## hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[5], linestyle = :dash, 
-##     label = "")
+p = @df bixcell scatter(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
+        markerstrokecolor = okabe_ito[2], m = 2, c = okabe_ito[2], label = "")
 
-## @df wtcell scatter!(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
-##         markerstrokecolor = okabe_ito[1], m = 2, c = okabe_ito[1], label = "")
+v = mapwindow(median, bixcell.abs_volume_um3, -2:2) ./ baseline_vs[first(bixcell.condition)]
+@df bixcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
+        ylabel = "Normalized volume",
+        linewidth = 2, c = okabe_ito[2], label = "")
+hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[2], linestyle = :dash,
+    label = "")
 
-## v = mapwindow(median, wtcell.abs_volume_um3, -2:2) ./ baseline_vs[first(wtcell.condition)]
-## @df wtcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
-##         xlabel = P"Time (mins)", xticks = 0:5:10, ylim = (0.8, 1.45),
-##         yticks = 0.8:0.2:1.4,
-##         ylabel = "Normalized volume",
-##         framestyle = :axes, linewidth = 2, c = okabe_ito[1], leg = :outerright,
-##         tick_direction = :out, label = "")
-## hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[1], linestyle = :dash, 
-##     label = "")
+@df latcell scatter!(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
+        markerstrokecolor = okabe_ito[5], m = 2, c = okabe_ito[5], label = "")
 
-## annotate!(10.5, 1.30, text("Ctrl", "Helvetica Bold", okabe_ito[1], :left, 10))
-## annotate!(10.5, 0.95, text("iNHE1", "Helvetica Bold", okabe_ito[2], :left, 10))
-## annotate!(10.5, 1.19, text("LatB", "Helvetica Bold", okabe_ito[5], :left, 10))
+v = mapwindow(median, latcell.abs_volume_um3, -2:2) ./ baseline_vs[first(latcell.condition)]
+@df latcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
+        framestyle = :axes, linewidth = 2, c = okabe_ito[5], leg = :outerright,
+        tick_direction = :out, label = "")
+hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[5], linestyle = :dash, 
+    label = "")
 
-## p1 = plot(p, grid = :y, size = (450, 350))
+@df wtcell scatter!(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
+        markerstrokecolor = okabe_ito[1], m = 2, c = okabe_ito[1], label = "")
 
-## savefig(p1, joinpath("assets", "single_cell.svg"))
-## p1
+v = mapwindow(median, wtcell.abs_volume_um3, -2:2) ./ baseline_vs[first(wtcell.condition)]
+@df wtcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
+        xlabel = P"Time (mins)", xticks = 0:5:10, ylim = (0.8, 1.45),
+        yticks = 0.8:0.2:1.4,
+        ylabel = "Normalized volume",
+        framestyle = :axes, linewidth = 2, c = okabe_ito[1], leg = :outerright,
+        tick_direction = :out, label = "")
+hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[1], linestyle = :dash, 
+    label = "")
 
-## # ## Motile PI3Kγ cells show fluctuations
+annotate!(10.5, 1.30, text("Ctrl", "Helvetica Bold", okabe_ito[1], :left, 10))
+annotate!(10.5, 0.95, text("iNHE1", "Helvetica Bold", okabe_ito[2], :left, 10))
+annotate!(10.5, 1.19, text("LatB", "Helvetica Bold", okabe_ito[5], :left, 10))
 
-## duvelcell = filter(x->x.condition == "Duvel", highrescells)
-## duvelcell.reltime = uconvert.(u"minute", duvelcell.time_s .* u"s") .+ 30u"minute"
+p1 = plot(p, grid = :y, size = (450, 350))
 
-## p =  @df duvelcell scatter(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
-##         markerstrokecolor = okabe_ito[4], m = 2, c = okabe_ito[4], label = "")
+savefig(p1, joinpath("assets", "single_cell.svg"))
+p1
 
-## v = mapwindow(median, duvelcell.abs_volume_um3, -2:2) ./ baseline_vs[first(duvelcell.condition)]
-## @df duvelcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
-##         framestyle = :axes, linewidth = 2, c = okabe_ito[4], leg = :outerright,
-##         tick_direction = :out, label = "")
-## hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[4], linestyle = :dash, 
-##     label = "")
+# ## Motile PI3Kγ cells show fluctuations
 
-## p1 = plot(p, grid = :y, size = (450, 350), 
-##         xlabel = P"Time (mins)", xticks = 0:5:10, ylim = (0.8, 1.45),
-##         yticks = 0.8:0.2:1.4,
-##         ylabel = "Normalized volume")
+duvelcell = filter(x->x.condition == "Duvel", highrescells)
+duvelcell.reltime = uconvert.(u"minute", duvelcell.time_s .* u"s") .+ 30u"minute"
+
+p =  @df duvelcell scatter(:reltime .- first(:reltime), :abs_volume_um3 ./ baseline_vs[first(:condition)], alpha = 0.3,
+        markerstrokecolor = okabe_ito[4], m = 2, c = okabe_ito[4], label = "")
+
+v = mapwindow(median, duvelcell.abs_volume_um3, -2:2) ./ baseline_vs[first(duvelcell.condition)]
+@df duvelcell plot!(:reltime .- first(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)), 
+        framestyle = :axes, linewidth = 2, c = okabe_ito[4], leg = :outerright,
+        tick_direction = :out, label = "")
+hline!([Measurements.value.(mean(v))], linewidth = 2, c = okabe_ito[4], linestyle = :dash, 
+    label = "")
+
+p1 = plot(p, grid = :y, size = (450, 350), 
+        xlabel = P"Time (mins)", xticks = 0:5:10, ylim = (0.8, 1.45),
+        yticks = 0.8:0.2:1.4,
+        ylabel = "Normalized volume")
+
+c = filter(x->x.condition == "Duvel", highrescells)
+duvelcell = c
+
+imgname = first(filter(x->x.condition == "Duvel", datasets)).datapath * "_fxmcorr.tif"
+
+open(joinpath(rootfolder, "data", imgname)) do f
+    img = TiffImages.load(f, mmap = true);
+
+    transform!(c,
+        AsTable(:) => ByRow(x->getcell(img, x)) => AsTable)
+end
+
+crng = Float64.((median(first.(c.img_ex)), median(last.(c.img_ex))))
+
+c.img .= adjust_histogram.(c.img, Ref(LinearStretching(crng => (0.1, 1.3))));
+
+c.reltime = uconvert.(u"minute", c.time_s .* u"s") .+ 40u"minute";
+
+## anim = @animate for (i, r) in Iterators.drop(enumerate(eachrow(c)), 5)
+anim = map(collect(Iterators.drop(enumerate(eachrow(c)), 5))[end:end]) do (i, r)
+    col = 4
+    p2 = @df c[1:i, :] scatter(ustrip.(:reltime), :abs_volume_um3 ./ baseline_vs[first(c.condition)], xlim = ustrip.(extrema(c.reltime)),
+            markerstrokecolor = faint(okabe_ito[col]), m = 2, c = faint(okabe_ito[col]), label = "", topmargin = 130px)
+    v = mapwindow(median, c[1:i, :abs_volume_um3] ./ baseline_vs[first(c.condition)], -2:2)
+    @df c[1:i, :] plot!(ustrip.(:reltime), Measurements.value.(v), ribbon = (Measurements.uncertainty.(v), Measurements.uncertainty.(v)),
+            xlabel = "Time (mins)", #xticks = 0:5:10, ylim = (0.8, 1.45),
+            yticks = 0.8:0.1:1.4,
+            ylabel = "Normalized volume", size = (600,480), bottommargin = -10px,
+            framestyle = :axes, linewidth = 2, c = okabe_ito[col], leg = :outerright,
+            tick_direction = :out, label = "", #topmargin = -15mm, leftmargin = 5mm, bottommargin = -5mm)
+)
+    yrng, xrng = extrema(c.x) .+ (-20, 20),extrema(c.y) .+ (-20-130, 20+130) 
+    sz = xrng[2] - xrng[1], yrng[2] - yrng[1]
+    x = 400
+    p1 = plot!(permutedims(r.img, [2,1]), xlim = xrng, ylim = yrng,
+        inset = bbox(0.15, 0.0, x * px, x / (sz[1]/sz[2]) * px),
+        subplot = 2,
+        xflip = true,
+        leg = false, framestyle = :none, grid = nothing, xticks = false, yticks = false)
+    @df c[1:i, :] plot!(:y, :x, subplot = 2,group = :particle, aspect_ratio = 1.0, yflip = true, c = col)
+
+    plot!(r.locality_cart_getoutline[[2, 1]]..., c = col, linestyle = :dash, label = "", subplot = 2)
+    plot!(r.footprint_cart_getoutline[[2,1]]..., c = col, label = "", subplot = 2)
+
+    plot!(rectangle(50/0.653,7,xrng[1] + 10, yrng[1] + 10), subplot = 2,
+          linewidth = 0, c=colorant"black", label = "") 
+
+    p2
+end;
+
+# As we can see some PI3Kγ cells can move, but it's fairly slow movement:
+
+savefig(anim[1], joinpath("assets", "sv6_still.png"))
+anim[1]
+
+# If run on your own machine run the following lines to generate the animated
+# movie of the PI3Kγ cell:
+# 
+# ```julia
+# cp(joinpath(anim.dir, anim.frames[end]), joinpath("assets", "sv6_still.png"); force = true)
+# mp4(anim, "sv6_video.mp4")
+# ```
+# which should look this:
+# 
+# ```@raw html
+# <video autoplay loop muted playsinline>
+#     <source src="../../../assets/sv6_video.mp4" type="video/mp4">
+# </video>
+# ```

@@ -10,7 +10,8 @@ files = ["fxm_uncaging_augmented.csv",
          "fxm_highres_datasets.csv",
          "fxm_highres_augmented_w_localities.csv",
          "fxm_highres_ds1_230310_V8_WT_fxmcorr.tif",
-         "fxm_highres_ds2_230310_V8_BIX_fxmcorr.tif"
+         "fxm_highres_ds2_230310_V8_BIX_fxmcorr.tif",
+         "fxm_highres_ds3_231004_V8_Duvel_fxmcorr.tif"
 ]
 for file in files
     if !isfile(joinpath(dst, file))
