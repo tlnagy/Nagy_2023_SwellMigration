@@ -6,31 +6,39 @@ using URIs
 # Get access token
 ######################################
 
-root = "https://datadryad.org"
-doi = URIs.escapeuri("doi:10.7272/Q6NS0S5N")
+function getaccesstoken(root)
+    @info "Getting access token"
 
-app_id = ENV["AppID"]
-secret = ENV["AppSecret"]
+    app_id = ENV["AppID"]
+    secret = ENV["AppSecret"]
 
-payload = Dict(
-    "grant_type" => "client_credentials",
-    "client_id" => app_id,
-    "client_secret" => secret
-)
+    payload = Dict(
+        "grant_type" => "client_credentials",
+        "client_id" => app_id,
+        "client_secret" => secret
+    )
 
-response = HTTP.request("POST", "$(root)/oauth/token", ["Content-Type" => "application/json"], JSON.json(payload))
-response = JSON.parse(String(response.body))
-access_token = response["access_token"]
+    response = HTTP.request("POST", "$(root)/oauth/token", ["Content-Type" => "application/json"], JSON.json(payload))
+    response = JSON.parse(String(response.body))
+    access_token = response["access_token"]
 
-headers = Dict(
-    "Accept" => "application/json",
-    "Content-Type" => "application/json",
-    "Authorization" => "Bearer $access_token"
-)
+    headers = Dict(
+        "Accept" => "application/json",
+        "Content-Type" => "application/json",
+        "Authorization" => "Bearer $access_token"
+    )
+
+    return headers
+end
 
 ######################################
 # Get versions
 ######################################
+
+root = "https://datadryad.org"
+doi = URIs.escapeuri("doi:10.7272/Q6NS0S5N")
+
+headers = haskey(ENV, "CI") ? getaccesstoken(root) : Dict()
 
 resp = HTTP.get("$(root)/api/v2/datasets/$(doi)/versions", headers)
 s = JSON.parse(String(resp.body))
