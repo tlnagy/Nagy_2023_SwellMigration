@@ -46,7 +46,12 @@ makedocs(
 
 postprocess_cb()
 
-deploydocs(
-    repo = "github.com/tlnagy/Nagy_2023_SwellMigration.git",
-    versions=nothing
-)
+# only deploy if we're on the ubuntu Github worker
+if haskey(ENV, "CI") && Sys.islinux()
+    deploydocs(
+        repo = "github.com/tlnagy/Nagy_2023_SwellMigration.git",
+        versions=nothing
+    )
+else
+    @info "Skipping deployment"
+end

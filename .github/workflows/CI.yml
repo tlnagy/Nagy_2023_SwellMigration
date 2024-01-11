@@ -16,8 +16,19 @@ permissions:
 
 jobs:
   docs:
-    name: Build demo site
-    runs-on: ubuntu-latest
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - '1'
+        os:
+          - ubuntu-latest
+          - macOS-latest
+          - windows-latest
+        arch:
+          - x64
     steps:
       - uses: actions/checkout@v3
 
@@ -26,9 +37,12 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: data/
-          key: ${{ runner.os }}-dataset
+          key: ${{ matrix.os }}-dataset
 
       - uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v1
       - uses: julia-actions/julia-buildpkg@v1
       - run: |
