@@ -32,7 +32,7 @@ isnothing(fig_assets) || (push!(assets, fig_assets))
 makedocs(
     sitename="Neutrophils Actively Swell\nto Potentiate Migration",
     format = Documenter.HTML(
-        size_threshold_ignore = ["figures/Notebooks/density_sim.md", "figures/Notebooks/latb_volume.md", "figures/Notebooks/motility.md", "figures/Notebooks/volume.md", "figures/Notebooks/singlecell.md"],
+        size_threshold = Int(1.049 * 10^7), # 10 MiB HTML limit
         assets =vcat([
                 asset("https://analytics.tamasnagy.com/js/script.js", class=:js, attributes=Dict(Symbol("data-domain") => "tamasnagy.com", :defer => ""))
             ], assets),
