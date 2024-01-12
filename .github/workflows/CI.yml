@@ -49,6 +49,9 @@ jobs:
           julia --project="." -e '
             using Pkg
             Pkg.instantiate()'
+      - if: ${{ matrix.os }} == 'windows-latest'
+        name: "Switch on debug mode on windows"
+        run: set JULIA_DEBUG="all"
       - run: julia --project="." site/make.jl
         env:
           AppID: ${{ secrets.APPID }}
