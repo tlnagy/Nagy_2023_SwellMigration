@@ -50,15 +50,23 @@ jobs:
             using Pkg
             Pkg.instantiate()'
       - if: ${{ matrix.os }} == 'windows-latest'
-        name: "Switch on debug mode on windows"
-        run: set JULIA_DEBUG="all"
-      - run: julia --project="." site/make.jl
+        name: "Run in debug mode on windows"
+        run: |
+          $env:JULIA_DEBUG="all"
+          julia --project="." site/make.jl
         env:
           AppID: ${{ secrets.APPID }}
           AppSecret: ${{ secrets.APPSECRET }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-      
+      - if: ${{ matrix.os }} != 'windows-latest'
+        name: "Run normally"
+        run: julia --project="." site/make.jl
+        env:
+          AppID: ${{ secrets.APPID }}
+          AppSecret: ${{ secrets.APPSECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
       - name: Save datasets
         id: cache-datasets-save
         uses: actions/cache/save@v3
