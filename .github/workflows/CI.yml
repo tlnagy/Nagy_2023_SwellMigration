@@ -49,19 +49,10 @@ jobs:
           julia --project="." -e '
             using Pkg
             Pkg.instantiate()'
-      - if: ${{ matrix.os }} == 'windows-latest'
+      - if: matrix.os == 'windows-latest'
         name: "Run in debug mode on windows"
-        run: |
-          $env:JULIA_DEBUG="all"
-          julia --project="." site/make.jl
-        env:
-          AppID: ${{ secrets.APPID }}
-          AppSecret: ${{ secrets.APPSECRET }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-      - if: ${{ matrix.os }} != 'windows-latest'
-        name: "Run normally"
-        run: julia --project="." site/make.jl
+        run: $env:JULIA_DEBUG="all"
+      - run: julia --project="." site/make.jl
         env:
           AppID: ${{ secrets.APPID }}
           AppSecret: ${{ secrets.APPSECRET }}
