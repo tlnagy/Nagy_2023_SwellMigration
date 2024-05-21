@@ -1,5 +1,6 @@
 # Code for "Neutrophils actively swell to potentiate rapid migration" 
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11226815.svg)](https://doi.org/10.5281/zenodo.11226815)
 [![CI](https://github.com/tlnagy/Nagy_2023_SwellMigration/actions/workflows/CI.yml/badge.svg)](https://github.com/tlnagy/Nagy_2023_SwellMigration/actions/workflows/CI.yml)
 [![website](https://img.shields.io/badge/code_and_figures-blue)](https://tamasnagy.com/Nagy_2023_SwellMigration)
 
