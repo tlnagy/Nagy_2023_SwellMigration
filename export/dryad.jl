@@ -76,7 +76,7 @@ end
 
 function download(root, versionpath, dst, filename, headers)
     fileinfo = getfilepath(root, versionpath, filename, headers)
-    fileurl = fileinfo["_links"]["stash:file-download"]["href"]
+    fileurl = fileinfo["_links"]["stash:download"]["href"]
     mkpath(dst)
     HTTP.download(root * fileurl, joinpath(dst, filename), headers; update_period = 10)
 end
