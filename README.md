@@ -7,7 +7,7 @@
 
 This is the code used to generate the figures in my paper:
 
-**Nagy, T.L.**, Strickland, J., and Weiner, O.D. (2023). Neutrophils actively swell to potentiate rapid migration. Elife. 10.7554/elife.90551.
+**Nagy, T.L.**, Strickland, E., and Weiner, O.D. (2023). Neutrophils actively swell to potentiate rapid migration. Elife. 10.7554/elife.90551.
 
 Please cite the paper if any of this is useful to you. This code base
 automatically generates and builds most of the figures and movies in the paper

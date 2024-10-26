@@ -4,7 +4,7 @@
 
     This mini-site is meant to accompany the paper:
 
-    T. L. Nagy, J. Strickland, O. D. Weiner, "Neutrophils actively swell to 
+    T. L. Nagy, E. Strickland, O. D. Weiner, "Neutrophils actively swell to 
     potentiate rapid migration" *Elife* **2023**, 
     [DOI 10.7554/elife.90551.](https://elifesciences.org/reviewed-preprints/90551)
 
