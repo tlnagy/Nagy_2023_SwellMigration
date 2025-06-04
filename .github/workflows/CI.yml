@@ -30,20 +30,20 @@ jobs:
         arch:
           - x64
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Restore datasets
         id: cache-datasets-restore
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: data/
           key: ${{ matrix.os }}-dataset
 
-      - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - uses: julia-actions/cache@v1
+      - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
       - run: |
           julia --project="." -e '
@@ -60,7 +60,7 @@ jobs:
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
       - name: Save datasets
         id: cache-datasets-save
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: data/
           key: ${{ steps.cache-datasets-restore.outputs.cache-primary-key }}
