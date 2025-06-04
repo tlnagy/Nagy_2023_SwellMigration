@@ -34,7 +34,7 @@ makedocs(
     format = Documenter.HTML(
         size_threshold = Int(1.049 * 10^7), # 10 MiB HTML limit
         assets =vcat([
-                asset("https://analytics.tamasnagy.com/js/script.js", class=:js, attributes=Dict(Symbol("data-domain") => "tamasnagy.com", :defer => ""))
+                asset("https://stats.tamasnagy.com/script.js", class=:js, attributes=Dict(Symbol("data-website-id") => "63767397-8027-4beb-aca4-f8b6dba045e1", :defer => ""))
             ], assets),
     ),
     warnonly = true,
